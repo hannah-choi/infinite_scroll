@@ -10,10 +10,12 @@ body {
     justify-content: center;
     align-items: center;
     width: 100vw;
-    height: 100vh;
+    padding: 50px 0;
+    overflow-y: auto;
     background-color: #21364f;
     color: white;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
 div.post {

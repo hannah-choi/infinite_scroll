@@ -1,9 +1,10 @@
 const textInput = document.querySelector(".text");
 const list = document.querySelector(".list");
+let page = 1;
 
 const getData = async () => {
     const res = await fetch(
-        "https://jsonplaceholder.typicode.com/posts?_limit=5"
+        `https://jsonplaceholder.typicode.com/posts?_limit=5&_page=${page}`
     );
     const data = await res.json();
     addDataToUI(data);
@@ -31,3 +32,10 @@ const render = item => {
 };
 
 getData();
+
+window.onscroll = function () {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+        page++;
+        getData();
+    }
+};
