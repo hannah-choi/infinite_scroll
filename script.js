@@ -1,6 +1,9 @@
 const textInput = document.querySelector(".text");
 const list = document.querySelector(".list");
+const spinner = document.getElementById("spinner");
+const input = document.querySelector(".text");
 let page = 1;
+const dataArray = [];
 
 const getData = async () => {
     const res = await fetch(
@@ -8,12 +11,43 @@ const getData = async () => {
     );
     const data = await res.json();
     addDataToUI(data);
+    dataArray.push(...data);
+    console.log(dataArray);
 };
 
 const addDataToUI = data => {
     const div = document.createElement("div");
     div.innerHTML = data.map(item => render(item)).join("");
     list.appendChild(div);
+};
+
+const search = target => {
+    return dataArray.filter(data => {
+        const regex = new RegExp(target, "gi");
+        return data.title.match(regex) || data.body.match(regex);
+    });
+};
+
+const displaySearch = value => {
+    const matchArray = search(value);
+    if (matchArray.length > 0 || matchArray) {
+        list.innerHTML = "";
+        addDataToUI(matchArray);
+    } else {
+        list.innerHTML = "";
+        addDataToUI(dataArray);
+    }
+};
+
+const showSpinner = () => {
+    spinner.classList.add("show");
+    setTimeout(() => {
+        spinner.classList.remove("show");
+        setTimeout(() => {
+            page++;
+            getData();
+        }, 500);
+    }, 1000);
 };
 
 const render = item => {
@@ -33,9 +67,11 @@ const render = item => {
 
 getData();
 
-window.onscroll = function () {
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
-        page++;
-        getData();
+window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+        showSpinner();
     }
-};
+});
+
+input.addEventListener("input", e => displaySearch(e.target.value));
